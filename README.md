@@ -20,7 +20,7 @@ or initialize an auction and bid on it.
 
 ### RewardToken
 
-The Reward Token is a standard ERC20 token with OwnableRoles from [the solady library](https://github.com/Vectorized/solady). 
+The Reward Token is a standard ERC20 token with [OwnableRoles](https://github.com/Vectorized/solady) from the solady library. 
 This library allows to implement 'Minter Role', which will only allow the game contract to mint new tokens. 
 Deploying provides the deployer with initial 100 'Reward Token'. 
 
@@ -44,10 +44,8 @@ This contract is also deployed with OwnableRoles.
 
  - Utils is a base contract. 
  - It is upgradeable and can receive NFTs using safeTransfer.
- - The contract uses 'UUPSUpgradeable' from the OZ library.
+ - The contract uses [UUPSUpgradeable](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/UUPSUpgradeable.sol) from the OZ library.
  - This contract stores all variables, structs, mappings, events, errors and basic functions.
-
-To deploy the game one needs to deploy it with Proxy and with RewardToken and RobotsNFT's addresses.
 
 ### Factory
 
@@ -56,69 +54,36 @@ To deploy the game one needs to deploy it with Proxy and with RewardToken and Ro
  - If a player by accident sends more eth than needed, the contract will return excess eth.
  - If a player sends eth to this contract directly, the contract will try to mint a new robot with eth. 
 
-And repeat
+### Growing
 
-    until finished
+ - Growing inherits Factory.
+ - Players can combine two robots into stronger one by burning them.
+ - Players can multiply two robots to get a new robot with average stats. 
+ - Before calling any function a player should approve 'Fee' amount of the reward tokens, which (minus 'Tax') is burned.
+ - To combine robots a player also needs to approve both robots.
+ 
+ ### RobotMarket
+ 
+ - RobotMarket inherits Growing.
+ - Players can sell robots on the market or by creating an auction.
+ - Other players can buy a robot or bid on autions.
+ - Every sale direct or through an auction pays a 'Tax'.
+ 
+ ### Fighting
+ 
+ - Fighting inherits RobotMarket.
+ - Players can create an arena, which other players can join.
+ - To create and join an arena players must pay 'Fee'.
+ - The winner gets 2 'Fees' (minus 'Tax') and an additional reward.
+ 
+To deploy the game one needs to deploy this contract with Proxy and with RewardToken and RobotsNFT's addresses.
+After deploying the game, the owner of 'RewardToken' and 'RobotsNFT' needs to call 'setMinter' function in both contracts
+with Proxy's address as an arg.
 
-End with an example of getting some data out of the system or using it
-for a little demo
+### V2
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Sample Tests
-
-Explain what these tests test and why
-
-    Give an example
-
-### Style test
-
-Checks if the best practices and the right coding style has been used.
-
-    Give an example
-
-## Deployment
-
-Add additional notes to deploy this on a live system
-
-## Built With
-
-  - [Contributor Covenant](https://www.contributor-covenant.org/) - Used
-    for the Code of Conduct
-  - [Creative Commons](https://creativecommons.org/) - Used to choose
-    the license
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code
-of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [Semantic Versioning](http://semver.org/) for versioning. For the versions
-available, see the [tags on this
-repository](https://github.com/PurpleBooth/a-good-readme-template/tags).
-
-## Authors
-
-  - **Billie Thompson** - *Provided README Template* -
-    [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of
-[contributors](https://github.com/PurpleBooth/a-good-readme-template/contributors)
-who participated in this project.
-
-## License
-
-This project is licensed under the [CC0 1.0 Universal](LICENSE.md)
-Creative Commons License - see the [LICENSE.md](LICENSE.md) file for
-details
-
-## Acknowledgments
-
-  - Hat tip to anyone whose code is used
-  - Inspiration
-  - etc
+ - V2 inherits Fighting.
+ - This contract is an example of an update of the game.
+ - Provides a new way to generate 'dna' (but it's still *pseudorandom*).
+ - Updating the game will keep all the values and mappings of the old contract.
 
