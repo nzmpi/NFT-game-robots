@@ -36,7 +36,7 @@ RobotsNFT is a ERC721 token with an additional struct:
        uint32 readyTime;
     }
 
-Every NFT has its own struct, that keeps all stats:
+Every NFT has its own struct, that keeps all its stats:
 
     mapping (uint256 => Robot) public robots;
     
