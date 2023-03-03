@@ -20,7 +20,7 @@ or initialize an auction and bid on it.
 
 ### RewardToken
 
- - The Reward Token is a standard ERC20 token with [OwnableRoles](https://github.com/Vectorized/solady) from the solady library. 
+ - The Reward Token is a standard ERC20 token with [OwnableRoles](https://github.com/Vectorized/solady/blob/main/src/auth/OwnableRoles.sol) from the solady library. 
  
  - This library allows to implement 'Minter Role', which will only allow the game contract to mint new tokens. 
 
