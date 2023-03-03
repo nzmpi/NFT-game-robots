@@ -14,7 +14,7 @@ or with eth.
 - Players can only mint 1 robot per address! But they can sell and buy robots using [the Robot market](https://github.com/nzmpi/NFT-game-robots/blob/main/RobotMarket.sol) 
 or initialize an auction and bid on it.
 
-- Players can create an arena and fight with other players. The winner gets the 'Fighting Fee' and additional new minted 'Reward Tokens'.
+- Players can create an arena and fight with other players. The winner gets two 'Fighting Fees' and additional new minted 'Reward Tokens'.
 
 ## Contracts
 
