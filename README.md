@@ -68,7 +68,7 @@ This contract is also deployed with OwnableRoles.
  
  - RobotMarket inherits Growing.
  - Players can sell robots on the market or by creating an auction.
- - Other players can buy a robot or bid on autions.
+ - Other players can buy a robot or bid on auctions.
  - Every sale direct or through an auction pays a 'Tax'.
  
  ### Fighting
@@ -79,6 +79,7 @@ This contract is also deployed with OwnableRoles.
  - The winner gets 2 'Fees' (minus 'Tax') and an additional reward.
  
 To deploy the game one needs to deploy this contract with Proxy and with RewardToken and RobotsNFT's addresses.
+
 After deploying the game, the owner of 'RewardToken' and 'RobotsNFT' needs to call 'setMinter' function in both contracts
 with Proxy's address as an arg.
 
