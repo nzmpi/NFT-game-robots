@@ -85,8 +85,9 @@ with Proxy's address as an arg.
 
 ### V2
 
+This contract is an example of an update of the game.
+
  - V2 inherits Fighting.
- - This contract is an example of an update of the game.
  - Provides a new way to generate 'dna' (but it's still *pseudorandom*).
  - Updating the game will keep all the values and mappings of the old contract.
 
