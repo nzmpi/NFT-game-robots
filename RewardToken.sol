@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "solady/src/auth/OwnableRoles.sol";
 
-/*
+/**
 * @title A simple reward token with OwnableRoles
 * @dev only an address with 'minterRole' can mint
 */

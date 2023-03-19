@@ -7,29 +7,32 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-/*
-* @title A base contract 
+/**
+* @title A Utils contract 
 * @dev This contract is upgradeable and can receive NFTs using safeTransfer
 * This contract stores all variables, structs, mappings, events, errors and basic functions
 */
 contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
-    // Not using uint256 reduces number of storage slots, which reduces gas usage
-    // Taxes are in %, e.g. marketTax = 1 => contract gets 1% from every sale
-    // Fees are in ether, i.e. 10**18
+    /**
+    * @dev Not using uint256 reduces number of storage slots, 
+    * which reduces gas usage for a deployment 
+    * @notice Taxes are in %, e.g. marketTax = 1 => contract gets 1% from every sale
+    * @notice Fees are in ether, i.e. 10**18
+    */
     uint8 public marketTax;
     uint8 public auctionTax;
     uint8 public fightingTax;
     uint8 public combiningTax;
     uint8 public multiplyingTax;
-    uint32 public multiplyingCooldown;    
-    uint128 public mintingFeeInEth;
-    // Next fees are paid in the reward tokens
-    uint128 public mintingFeeInToken;
-    uint128 public combiningFee;
+    uint32 public multiplyingCooldown; 
     uint128 public multiplyingFee;
     uint128 public fightingFee;
     uint128 public reward;
+    uint128 public combiningFee;    
+    uint128 public mintingFeeInEth;
+    uint128 public mintingFeeInToken;    
     uint128 newArenaId;
+
     RewardToken public token;
     RobotsNFT public nft;
 
@@ -41,7 +44,7 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
     struct Arena {
         uint8 isArenaActive;
         uint8 isFighting;
-        uint256 creatorRobotId;
+        uint128 creatorsRobotId;
     }
 
     mapping (address => uint256) public hasMinted;  // minter => 0 or 1
@@ -61,19 +64,19 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
     event withdrawEvent(uint256 amountEth, uint256 amountToken);
     event newMintingFeeInEthEvent(uint128 oldMintingFeeInEth, uint128 newMintingFeeInEth);
     event newMintingFeeInTokenEvent(uint128 oldMintingFeeInToken, uint128 newMintingFeeInToken);
-    event createArenaEvent(address creator, uint256 robotId, uint128 arenaId);
-    event removeArenaEvent(address creator, uint128 arenaId);
-    event fightingEvent(address winner, uint256 winnerRobotId, address loser, uint256 loserRobotId);
+    event createArenaEvent(address indexed creator, uint256 robotId, uint128 arenaId);
+    event removeArenaEvent(address indexed creator, uint128 arenaId);
+    event fightingEvent(address indexed winner, uint256 winnerRobotId, address indexed loser, uint256 loserRobotId);
     event newFightingTaxEvent(uint8 oldFightingTax, uint8 newFightingTax);
     event newFightingFeeEvent(uint128 oldFightingFee, uint128 newFightingFee);
     event newRewardEvent(uint128 oldReward, uint128 newReward);
-    event putOnMarketEvent(address seller, uint256 robotId, uint256 price);
-    event withdrawFromMarketEvent(address seller, uint256 robotId);
-    event buyRobotEvent(address buyer, uint256 robotId, uint256 price);
-    event putOnAuctionEvent(address seller, uint256 robotId, uint256 startingPrice, uint32 auctionTime);
-    event withdrawFromAuctionEvent(address seller, uint256 robotId);
-    event bidOnAuctionEvent(address bidder, uint256 robotId, uint256 bid);
-    event endAuctionEvent(address ender, uint256 robotId);
+    event putOnMarketEvent(address indexed seller, uint256 robotId, uint256 price);
+    event withdrawFromMarketEvent(address indexed seller, uint256 robotId);
+    event buyRobotEvent(address indexed buyer, uint256 robotId, uint256 price);
+    event putOnAuctionEvent(address indexed seller, uint256 robotId, uint256 startingPrice, uint32 auctionTime);
+    event withdrawFromAuctionEvent(address indexed seller, uint256 robotId);
+    event bidOnAuctionEvent(address indexed bidder, uint256 robotId, uint256 bid);
+    event endAuctionEvent(address indexed ender, uint256 robotId);
     event newMarketTaxEvent(uint8 oldMarketTax, uint8 newMarketTax);
     event newAuctionTaxEvent(uint8 oldAuctionTax, uint8 newAuctionTax);
     event newRewardTokenEvent(address oldRewardToken, address newRewardToken);
@@ -105,12 +108,12 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         mintingFeeInEth = 1 ether;
         mintingFeeInToken = 1 ether;
         combiningFee = 1 ether;
-        multiplyingFee = 3 ether;
+        multiplyingFee = 1 ether;
         fightingFee = 1 ether;
-        reward = 10 ether;
+        reward = 1 ether;
     }
 
-    // only owner can withdraw eth and tokens from this contract
+    // Only owner can withdraw eth and tokens from this contract
     function withdraw() external virtual onlyOwner {
         uint256 _amountEth = address(this).balance;
         uint256 _amountToken = token.balanceOf(address(this));
@@ -125,7 +128,7 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         emit withdrawEvent(_amountEth, _amountToken);
     }
 
-    // fucntions to set fees and taxes
+    // Fucntions to set fees and taxes
     function setMintingFeeInEth(uint128 _newMintingFeeInEth) external onlyOwner {
         emit newMintingFeeInEthEvent(mintingFeeInEth, _newMintingFeeInEth);
         mintingFeeInEth = _newMintingFeeInEth;
@@ -181,7 +184,7 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         multiplyingTax = _newMultiplyingTax;
     }
 
-    // set new multiplying cooldown
+    // Set new multiplying cooldown
     function setMultiplyingCooldown(uint32 _newCooldown) external onlyOwner {
         emit newMultiplyingCooldownEvent(multiplyingCooldown, _newCooldown);
         multiplyingCooldown = _newCooldown;
@@ -197,12 +200,12 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         token = RewardToken(_newRewardToken);
     }
 
-    // should be overridden in new versions 
+    // Should be overridden in new versions 
     function getVersion() external pure virtual returns (string memory) {
         return "Version 1.0";
     }
 
-    // returns 10 or lower
+    // Returns 10 or lower
     function _max10(uint8 x) internal pure returns (uint8) {
         return x > 10 ? 10 : x;
     }

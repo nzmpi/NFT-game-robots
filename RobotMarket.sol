@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 
 import "./Growing.sol";
 
-/*
+/**
 * @title A market contract
-* robots can only be bought with the reward tokens
+* @notice Robots can only be bought with the reward token
 */
 contract RobotMarket is Growing {   
     
@@ -25,10 +25,10 @@ contract RobotMarket is Growing {
 
         address owner = oldOwner[robotId];
         if (owner != msg.sender) revert NotOwnerOf(robotId);
-
-        nft.safeTransferFrom(address(this), owner, robotId);
+        
         delete oldOwner[robotId];
         delete market[robotId];
+        nft.safeTransferFrom(address(this), owner, robotId);
         emit withdrawFromMarketEvent(owner, robotId);
     }
 
@@ -40,9 +40,9 @@ contract RobotMarket is Growing {
         //send (price - tax) tokens to the seller
         token.transfer(oldOwner[robotId], price*(1000-10*marketTax)/1000);
 
-        nft.safeTransferFrom(address(this), msg.sender, robotId);
         delete oldOwner[robotId];
         delete market[robotId];
+        nft.safeTransferFrom(address(this), msg.sender, robotId);        
         emit buyRobotEvent(msg.sender, robotId, price);
     }
 
@@ -67,14 +67,14 @@ contract RobotMarket is Growing {
         if (owner != msg.sender) revert NotOwnerOf(robotId);
         require(tempAuction.highestBidder == address(0), "Someone placed a bid!");
 
-        nft.safeTransferFrom(address(this), owner, robotId);
         delete oldOwner[robotId];
         delete auctions[robotId];
+        nft.safeTransferFrom(address(this), owner, robotId);        
         emit withdrawFromAuctionEvent(msg.sender, robotId);
     }
 
     function bidOnAuction(uint256 robotId, uint256 bid) external virtual {
-        Auction memory tempAuction = auctions[robotId]; // saving gas
+        Auction memory tempAuction = auctions[robotId];
         if (tempAuction.highestBid == 0) revert RobotIsNotOnAuction(robotId);
         require(tempAuction.endTime > block.timestamp, "The auction has ended!");
 
@@ -98,20 +98,22 @@ contract RobotMarket is Growing {
 
     // anyone can end an auction
     function endAuction(uint256 robotId) external virtual {
-        Auction memory tempAuction = auctions[robotId]; // saving gas
+        Auction memory tempAuction = auctions[robotId];
         if (tempAuction.highestBid == 0) revert RobotIsNotOnAuction(robotId);
         require(tempAuction.endTime < block.timestamp, "The auction hasn't ended yet!");
 
-        // checks for any bids
-        if (tempAuction.highestBidder != address(0)) {
-            token.transfer(oldOwner[robotId], tempAuction.highestBid*(1000-10*auctionTax)/1000);
-            nft.safeTransferFrom(address(this), tempAuction.highestBidder, robotId);
-        } else {
-            nft.safeTransferFrom(address(this), oldOwner[robotId], robotId);
-        }
-
+        address owner = oldOwner[robotId];
         delete oldOwner[robotId];
         delete auctions[robotId];
+
+        // checks for any bids
+        if (tempAuction.highestBidder != address(0)) {
+            token.transfer(owner, tempAuction.highestBid*(1000-10*auctionTax)/1000);
+            nft.safeTransferFrom(address(this), tempAuction.highestBidder, robotId);
+        } else {
+            nft.safeTransferFrom(address(this), owner, robotId);
+        }
+
         emit endAuctionEvent(msg.sender, robotId);
     }
 }

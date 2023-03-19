@@ -3,19 +3,21 @@ pragma solidity ^0.8.0;
 
 import "./RobotMarket.sol";
 
-/*
+/**
 * @title A contract for fighting with robots
 */
 contract Fighting is RobotMarket {
 
-    // create an arena by paying 'fightingFee'
-    // number of arenas is not limited
+    /**
+    * create an arena by paying 'fightingFee'
+    * @notice number of arenas is not limited
+    */
     function createArena(uint256 robotId) external virtual {
         address owner = nft.ownerOf(robotId);
         if (owner != msg.sender) revert NotOwnerOf(robotId);
 
         token.transferFrom(owner, address(this), fightingFee);
-        arenas[newArenaId] = Arena(1, 0, robotId);
+        arenas[newArenaId] = Arena(1, 0, uint128(robotId)); 
         emit createArenaEvent(owner, robotId, newArenaId);
         ++newArenaId;
     }
@@ -24,7 +26,7 @@ contract Fighting is RobotMarket {
         Arena memory tempArena = arenas[arenaId];
         if (tempArena.isArenaActive == 0) revert ArenaIsNotActive(arenaId);
 
-        uint256 robotId = tempArena.creatorRobotId;
+        uint256 robotId = tempArena.creatorsRobotId;
         address owner = nft.ownerOf(robotId);
         require(owner == msg.sender, "Not the creator!");
         if (tempArena.isFighting == 1) revert SomeoneIsFighting(arenaId);
@@ -34,7 +36,7 @@ contract Fighting is RobotMarket {
         emit removeArenaEvent(owner, arenaId);
     }
 
-    // anyone can pick any free arena and fight the creator by paying 'fightingFee'
+    // anyone can pick any free arena and fight by paying 'fightingFee'
     function enterArena(uint128 arenaId, uint256 attackerRobotId) external virtual {
         address attacker = nft.ownerOf(attackerRobotId);
         if (attacker != msg.sender) revert NotOwnerOf(attackerRobotId);
@@ -46,7 +48,7 @@ contract Fighting is RobotMarket {
         token.transferFrom(attacker, address(this), fightingFee);
         arenas[arenaId].isFighting = 1;
 
-        uint256 defenderRobotId = tempArena.creatorRobotId;
+        uint256 defenderRobotId = tempArena.creatorsRobotId;
         address defender = nft.ownerOf(defenderRobotId);
         bool attackerIsWinner = _fighting(defenderRobotId, attackerRobotId, arenaId);
         
@@ -69,6 +71,7 @@ contract Fighting is RobotMarket {
         (uint8 defenderAttack, uint8 defenderDefence,) = nft.getStats(defenderRobotId);
         (uint8 attackerAttack, uint8 attackerDefence,) = nft.getStats(attackerRobotId);
         uint256 winner = 1;
+
         if (attackerAttack > defenderDefence) {
             unchecked {++winner;} // max can only be 2
         } 
@@ -79,7 +82,7 @@ contract Fighting is RobotMarket {
         if (winner == 0) return false; // only the defender won
         
         // if both won or both lost pseudorandom decides the winner
-        uint256 rand = uint256(keccak256(abi.encodePacked(defenderRobotId, attackerRobotId, arenaId))) % 2;
+        uint256 rand = uint256(keccak256(abi.encodePacked(defenderRobotId, attackerRobotId, arenaId, blockhash(block.number - 1)))) % 2;
         return rand == 0 ? true : false;
     }
 }

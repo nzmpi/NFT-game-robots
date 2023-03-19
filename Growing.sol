@@ -3,13 +3,15 @@ pragma solidity ^0.8.0;
 
 import "./Factory.sol";
 
-/*
+/**
 * @title A contract to create new robots
 */
 contract Growing is Factory {
-    // takes 2 robots and combines them into new one
-    // @dev 2 robots and 'combiningFee' tokens must be approved
-    function combineRobots(uint256 robotId1, uint256 robotId2) external {
+    /** 
+    * takes 2 robots and combines them into new one
+    * @dev 2 robots and 'combiningFee' tokens must be approved
+    */
+    function combineRobots(uint256 robotId1, uint256 robotId2) external virtual {
         if (nft.ownerOf(robotId1) != msg.sender) revert NotOwnerOf(robotId1);
         if (nft.ownerOf(robotId2) != msg.sender) revert NotOwnerOf(robotId2);
 
@@ -31,9 +33,11 @@ contract Growing is Factory {
         emit combineRobotsEvent(robotId1, robotId2, robotId, newAttack, newDefence);
     }
 
-    // takes 2 robots and creates new one
-    // @dev 2 robots and 'multiplyingFee' tokens must be approved
-    function multiplyRobots(uint128 robotId1, uint128 robotId2) external {
+    /**
+    * takes 2 robots and creates a new one
+    * @dev 2 robots and 'multiplyingFee' tokens must be approved
+    */
+    function multiplyRobots(uint128 robotId1, uint128 robotId2) external virtual {
         if (nft.ownerOf(robotId1) != msg.sender) revert NotOwnerOf(robotId1);
         if (nft.ownerOf(robotId2) != msg.sender) revert NotOwnerOf(robotId2);
 
