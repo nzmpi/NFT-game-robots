@@ -7,7 +7,6 @@ import "./RobotMarket.sol";
 * @title A contract for fighting with robots
 */
 contract Fighting is RobotMarket {
-
     /**
     * create an arena by paying 'fightingFee'
     * @notice number of arenas is not limited

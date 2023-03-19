@@ -45,8 +45,10 @@ contract Factory is Utils {
         emit robotMintEvent(robotId, _attack, _defence);
     }
 
-    // have to be here and not in Utils.sol 
-    // to be able to call mintRobotWithEth()
+    /**
+    * @dev Have to be here and not in Utils.sol 
+    * to be able to call mintRobotWithEth()
+    */
     receive() external payable {
         mintRobotWithEth();
     }
