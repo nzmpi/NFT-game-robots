@@ -1,6 +1,6 @@
 # Robots [NFT game]
 
-A small upgradeable P2E NFT game with custom ERC20 and ERC721 tokens.
+An upgradeable P2E NFT game with custom ERC20 and ERC721 tokens.
 
 ## About
 
