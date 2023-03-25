@@ -4,14 +4,14 @@ pragma solidity ^0.8.0;
 import "./Factory.sol";
 
 /**
-* @title A contract to create new robots
-*/
+ * @title A contract to create new robots
+ */
 contract Growing is Factory {
     /** 
-    * takes 2 robots and combines them into new one
-    * @dev 2 robots and 'combiningFee' tokens must be approved
-    */
-    function combineRobots(uint256 robotId1, uint256 robotId2) external virtual {
+     * Takes 2 robots and combines them into new one
+     * @dev 2 robots and 'combiningFee' tokens must be approved
+     */
+    function combineRobots(uint256 robotId1, uint256 robotId2) external virtual returns (uint256 robotId) {
         if (nft.ownerOf(robotId1) != msg.sender) revert NotOwnerOf(robotId1);
         if (nft.ownerOf(robotId2) != msg.sender) revert NotOwnerOf(robotId2);
 
@@ -24,9 +24,9 @@ contract Growing is Factory {
         // _max10 returns 10 or less
         uint8 newAttack = _max10(attack1 + attack2);
         uint8 newDefence = _max10(defence1 + defence2);
-        uint256 robotId = nft.mint(msg.sender, newAttack, newDefence, 0);
+        robotId = nft.mint(msg.sender, newAttack, newDefence, 0);
         
-        // burns 2 initial robots and (tokens-Tax)
+        // Burns 2 initial robots and (tokens-Tax)
         nft.burn(robotId1);
         nft.burn(robotId2);
         token.burn(combiningFee*(1000-10*combiningTax)/1000);
@@ -34,10 +34,10 @@ contract Growing is Factory {
     }
 
     /**
-    * takes 2 robots and creates a new one
-    * @dev 2 robots and 'multiplyingFee' tokens must be approved
-    */
-    function multiplyRobots(uint128 robotId1, uint128 robotId2) external virtual {
+     * Takes 2 robots and creates a new one
+     * @dev 2 robots and 'multiplyingFee' tokens must be approved
+     */
+    function multiplyRobots(uint256 robotId1, uint256 robotId2) external virtual returns (uint256 robotId) {
         if (nft.ownerOf(robotId1) != msg.sender) revert NotOwnerOf(robotId1);
         if (nft.ownerOf(robotId2) != msg.sender) revert NotOwnerOf(robotId2);
 
@@ -52,7 +52,7 @@ contract Growing is Factory {
         uint8 newAttack = (attack1 + attack2)/2;
         uint8 newDefence = (defence1 + defence2)/2;
         uint32 newReadyTime = uint32(block.timestamp) + multiplyingCooldown;
-        uint256 robotId = nft.mint(msg.sender, newAttack, newDefence, newReadyTime);
+        robotId = nft.mint(msg.sender, newAttack, newDefence, newReadyTime);
 
         nft.updateReadyTime(robotId1, newReadyTime);
         nft.updateReadyTime(robotId2, newReadyTime);

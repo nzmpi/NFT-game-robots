@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "solady/src/auth/OwnableRoles.sol";
 
 /**
-* @title A simple reward token with OwnableRoles
-* @dev only an address with 'minterRole' can mint
-*/
+ * @title A simple reward token with OwnableRoles
+ * @dev only an address with 'minterRole' can mint
+ */
 contract RewardToken is ERC20, OwnableRoles {
     uint256 constant minterRole = _ROLE_0;
     uint256 constant INITIAL_OWNER_BALANCE = 100 ether;

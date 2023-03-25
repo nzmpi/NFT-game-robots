@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import "./Growing.sol";
 
 /**
-* @title A market contract
-* @notice Robots can only be bought with the reward token
-*/
+ * @title A market contract
+ * @notice Robots can only be bought with the reward token
+ */
 contract RobotMarket is Growing {   
     
     function putOnMarket(uint256 robotId, uint256 price) external virtual {
@@ -37,7 +37,7 @@ contract RobotMarket is Growing {
 
         uint256 price = market[robotId];
         token.transferFrom(msg.sender, address(this), price);
-        //send (price - tax) tokens to the seller
+        // Send (price - tax) tokens to the seller
         token.transfer(oldOwner[robotId], price*(1000-10*marketTax)/1000);
 
         delete oldOwner[robotId];
@@ -78,15 +78,15 @@ contract RobotMarket is Growing {
         if (tempAuction.highestBid == 0) revert RobotIsNotOnAuction(robotId);
         require(tempAuction.endTime > block.timestamp, "The auction has ended!");
 
-        // the first bid can be equal to 'startingPrice'
-        if (tempAuction.highestBidder == address(0))
+        // The first bid can be equal to 'startingPrice'
+        if (tempAuction.highestBidder == address(0)) {
             if (bid < tempAuction.highestBid) revert BidIsSmall(tempAuction.highestBid);
-        else 
+        } else 
             if (bid <= tempAuction.highestBid) revert BidIsSmall(tempAuction.highestBid);
         
         token.transferFrom(msg.sender, address(this), bid);
 
-        // if not the first bid then send previous 'highestBid' to previous 'highestBidder'
+        // If not the first bid then send previous 'highestBid' to previous 'highestBidder'
         if (tempAuction.highestBidder != address(0)) {
             token.transfer(tempAuction.highestBidder, tempAuction.highestBid);
         }
@@ -96,7 +96,7 @@ contract RobotMarket is Growing {
         emit bidOnAuctionEvent(msg.sender, robotId, bid);
     }
 
-    // anyone can end an auction
+    // Anyone can end an auction
     function endAuction(uint256 robotId) external virtual {
         Auction memory tempAuction = auctions[robotId];
         if (tempAuction.highestBid == 0) revert RobotIsNotOnAuction(robotId);
@@ -106,7 +106,7 @@ contract RobotMarket is Growing {
         delete oldOwner[robotId];
         delete auctions[robotId];
 
-        // checks for any bids
+        // Checks for any bids
         if (tempAuction.highestBidder != address(0)) {
             token.transfer(owner, tempAuction.highestBid*(1000-10*auctionTax)/1000);
             nft.safeTransferFrom(address(this), tempAuction.highestBidder, robotId);

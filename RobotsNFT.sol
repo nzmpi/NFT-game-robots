@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "solady/src/auth/OwnableRoles.sol";
 
 /**
-* @title A simple NFT with OwnableRoles
-* @dev only an address with 'minterRole' can mint
-*/
+ * @title A simple NFT with OwnableRoles
+ * @dev only an address with 'minterRole' can mint
+ */
 contract RobotsNFT is ERC721, OwnableRoles {
     uint256 constant minterRole = _ROLE_0;
     uint256 newRobotId;
@@ -42,8 +42,9 @@ contract RobotsNFT is ERC721, OwnableRoles {
     }
 
     /**
-    * @dev delete can be removed to keep stats of burned robots, also requires an update in getStats(uint256)
-    */
+     * @dev delete can be removed to keep stats of burned robots, 
+     * also requires an update in getStats(uint256)
+     */
     function burn(uint256 robotId) external {
         require(ownerOf(robotId) == msg.sender, "Not the owner!");
         _burn(robotId);

@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 import "./Fighting.sol";
 
 /**
-* @title An example of an update
-*/
+ * @title An example of an update
+ */
 contract V2 is Fighting {
     
     function _generateRandomDna() internal view override virtual returns (uint256) {

@@ -8,17 +8,17 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 /**
-* @title A Utils contract 
-* @dev This contract is upgradeable and can receive NFTs using safeTransfer
-* This contract stores all variables, structs, mappings, events, errors and basic functions
-*/
+ * @title A Utils contract 
+ * @dev This contract is upgradeable and can receive NFTs using safeTransfer
+ * This contract stores all variables, structs, mappings, events, errors and basic functions
+ */
 contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
     /**
-    * @dev Not using uint256 reduces number of storage slots, 
-    * which reduces gas usage for a deployment 
-    * @notice Taxes are in %, e.g. marketTax = 1 => contract gets 1% from every sale
-    * @notice Fees are in ether, i.e. 10**18
-    */
+     * @dev Not using uint256 reduces number of storage slots, 
+     * which reduces gas usage for a deployment 
+     * @notice Taxes are in %, e.g. marketTax = 1 => contract gets 1% from every sale
+     * @notice Fees are in ether, i.e. 10**18
+     */
     uint8 public marketTax;
     uint8 public auctionTax;
     uint8 public fightingTax;
@@ -41,6 +41,7 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         address highestBidder;
         uint256 highestBid;
     }
+
     struct Arena {
         uint8 isArenaActive;
         uint8 isFighting;
@@ -210,11 +211,11 @@ contract Utils is UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver {
         return x > 10 ? 10 : x;
     }
 
-    // have to be here to be able to receive ERC721 tokens using safeTransfer
+    // Have to be here to be able to receive ERC721 tokens using safeTransfer
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
     }
 
-    // have to be here to be able to upgrade
+    // Have to be here to be able to upgrade
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
